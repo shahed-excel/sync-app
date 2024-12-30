@@ -13,7 +13,9 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { createTable } from "@/database/queries";
 
 import Toast from "react-native-toast-message";
-import React from "react";
+// import db from "@/database/database";
+
+
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();

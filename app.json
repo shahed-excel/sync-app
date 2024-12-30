@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "CRUD-Application",
-    "slug": "CRUD-Application",
+    "name": "test-app",
+    "slug": "test-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -16,7 +16,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.binshahed.CRUDApplication"
+      "package": "com.binshahed.testapp"
     },
     "web": {
       "bundler": "metro",
@@ -25,22 +25,6 @@
     },
     "plugins": [
       "expo-router",
-      [
-        "expo-sqlite",
-        {
-          "enableFTS": true,
-          "useSQLCipher": true,
-          "android": {
-            "enableFTS": false,
-            "useSQLCipher": false
-          },
-          "ios": {
-            "customBuildFlags": [
-              "-DSQLITE_ENABLE_DBSTAT_VTAB=1 -DSQLITE_ENABLE_SNAPSHOT=1"
-            ]
-          }
-        }
-      ],
       [
         "expo-splash-screen",
         {
@@ -59,7 +43,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "ea311fe5-0346-423a-841a-c9bd618b0b92"
+        "projectId": "b3c3cc41-192f-4b28-854a-838d1690b09a"
       }
     }
   }

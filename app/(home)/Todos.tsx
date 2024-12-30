@@ -26,7 +26,8 @@ import axios from "axios";
 
 import CustomButton from "@/components/buttons/CustomButton";
 import Toast from "react-native-toast-message";
-import React from "react";
+
+
 
 export default function Todos() {
   const deviceId =
@@ -111,6 +112,7 @@ export default function Todos() {
         id: id,
         title: title.trim(),
         content: content.trim(),
+        device: deviceId,
       });
       getTodosFromDB();
       clearFields();
@@ -160,7 +162,7 @@ export default function Todos() {
     try {
       // Make the API call to the backend
       const response = await axios.post(
-        "http://192.168.110.135:3000/sync",
+        `http://192.168.110.135:3000/sync?deviceId=${deviceId}`,
         myTodos
       );
 
@@ -181,6 +183,7 @@ export default function Todos() {
     try {
       // Make the API call to the backend
       const response = await axios.get("http://192.168.110.135:3000/pull");
+      console.log("polled response",response);
 
       if (response.status === 200) {
         console.log("Data Pull Successful", response.data);
@@ -192,7 +195,7 @@ export default function Todos() {
         });
       }
     } catch (err) {
-      console.log(err);
+      console.log("pooled error",err);
     }
   };
 
@@ -324,7 +327,7 @@ export default function Todos() {
                           style: "destructive",
                           onPress: async () => {
                             try {
-                              await deleteTodo(item.id);
+                              await deleteTodo(item.id, deviceId);
                               getTodosFromDB();
                               clearFields();
                               Toast.show({

@@ -1,6 +1,4 @@
 import { NavigationProp, useNavigation } from "@react-navigation/native";
-import React from "react";
-
 
 import {
   StyleSheet,

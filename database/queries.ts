@@ -14,11 +14,10 @@ export const createTable = async () => {
 };
 
 export const getAllTodos = async () => {
-
   const allRows = await db.getAllAsync(
     "SELECT * FROM testTodos ORDER BY id DESC"
   );
-  console.log("all rows",allRows);
+  console.log("all rows", allRows);
   return allRows;
 };
 
@@ -47,44 +46,70 @@ export const insertTodo = async (data: {
 };
 
 export const updateTodo = async (data: {
+  device: string; // Assuming device is required for this condition
   id: any;
   title: string;
   content: string;
 }) => {
+  try {
+    // Log the data being passed for debugging
+    console.log("Update data:", data);
+
+    // Construct the SQL query
+    const query = `
+      UPDATE testTodos 
+      SET title = ?, content = ? 
+      WHERE id = ? AND device = ?
+    `;
+
+    // Prepare the parameters
+    const params = [data.title, data.content, data.id, data.device];
+
+    // Log the query and parameters for debugging
+    console.log("Executing query:", query, "with params:", params);
+
+    // Execute the query
+    const result = await db.runAsync(query, ...params);
+
+    // Confirm the update was successful
+    console.log("Update successful:", result);
+  } catch (error) {
+    // Handle and log any errors
+    console.error("Error updating todo:", error);
+  }
+};
+
+
+export const deleteTodo = async (id: number, deviceId: string) => {
+  if (!deviceId) {
+    throw new Error("Device ID is required to delete a record");
+  }
+
   await db.runAsync(
-    "UPDATE testTodos SET title =?, content =? WHERE id =?",
-    data.title,
-    data.content,
-    data.id
+    "DELETE FROM testTodos WHERE id = ? AND device = ?",
+    id,
+    deviceId
   );
 };
 
-export const deleteTodo = async (id: number) => {
-  await db.runAsync("DELETE FROM testTodos WHERE id =?", id);
-};
-
-
-
-
-
-
-
-
-
-export const pullData = async (data: { device: string; id: number; title: string; content: string }[]) => {
+export const pullData = async (
+  data: { device: string; id: number; title: string; content: string }[]
+) => {
   if (!Array.isArray(data) || data.length === 0) {
     console.log("No data to sync");
     return;
   }
 
   try {
-   console.log("pulling");
+    console.log("pulling");
 
     for (let record of data) {
       const { device, id, title, content } = record;
 
       if (!device || !id || !title || !content) {
-        console.log("All fields (device, id, title, content) are required in each record");
+        console.log(
+          "All fields (device, id, title, content) are required in each record"
+        );
         continue;
       }
 
@@ -96,7 +121,8 @@ export const pullData = async (data: { device: string; id: number; title: string
         await updateTodo({
           id,
           title,
-          content
+          content,
+          device
         });
         console.log(`Updated record: ${device}, ${id}`);
       } else {
@@ -105,7 +131,7 @@ export const pullData = async (data: { device: string; id: number; title: string
           id,
           device,
           title,
-          content
+          content,
         });
         console.log(`Inserted new record: ${device}, ${id}`);
       }
@@ -115,12 +141,10 @@ export const pullData = async (data: { device: string; id: number; title: string
     await deleteOldRecords(data);
 
     console.log("Data synced successfully, with deletions handled");
-
   } catch (error) {
     console.error("Error syncing data:", error);
   }
 };
-
 
 // Check if a record exists based on device and id
 const checkIfRecordExists = async (device: string, id: number) => {
@@ -141,13 +165,13 @@ const deleteOldRecords = async (data: { device: string; id: number }[]) => {
   );
 
   const idsToDelete = allRecordsFromDB
-    .filter((record:any) => !clientIds.includes(record.id))
-    .map((record:any) => record.id);
+    .filter((record: any) => !clientIds.includes(record.id))
+    .map((record: any) => record.id);
 
   if (idsToDelete.length > 0) {
     await Promise.all(
       idsToDelete.map(async (id) => {
-        await deleteTodo(id); // Delete each old record
+        await db.runAsync("DELETE FROM testTodos WHERE id =?", id); // Delete each old record
       })
     );
     console.log(`Deleted records: ${idsToDelete}`);
