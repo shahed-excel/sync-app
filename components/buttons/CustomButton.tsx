@@ -29,7 +29,7 @@ const CustomButton = ({
       onPress={() => !disabled && onPress(item)}
     >
       {icon && <Icon name={icon} size={15} color={color || "white"} />}
-      {label && <Text style={styles.buttonText}>{label}</Text>}
+      {label && <Text style={styles.buttonText}>{label} 1</Text>}
     </TouchableOpacity>
   );
 };
